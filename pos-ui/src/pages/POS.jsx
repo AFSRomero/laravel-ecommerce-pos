@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import ProductList from "../components/ProductList";
 import Cart from "../components/Cart";
 import echo from "../services/socket";
-
-useEffect(() => {
-  echo.channel("inventory")
-      .listen("InventoryUpdated", (e) => {
-          fetchProducts();
-      });
-}, []);
+import api from "../services/api";
 
 function POS() {
   const [products, setProducts] = useState([]);
@@ -18,8 +11,21 @@ function POS() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const channel = echo.channel("inventory").listen("InventoryUpdated", () => {
+      fetchProducts();
+    });
+
+    return () => {
+      echo.leaveChannel("inventory");
+      if (channel && channel.stopListening) {
+        channel.stopListening("InventoryUpdated");
+      }
+    };
+  }, []);
+
   const fetchProducts = async () => {
-    const response = await axios.get("http://localhost:8000/api/products");
+    const response = await api.get("/products");
     setProducts(response.data);
   };
 
