@@ -15,11 +15,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-    \App\Events\OrderCreated::class => [
-        \App\Listeners\UpdateInventory::class,
-        \App\Listeners\CreateAuditLog::class,
-    ],
-];
+        \App\Events\OrderCreated::class => [
+            \App\Listeners\CreateAuditLog::class,
+        ],
+    ];
     /**
      * Register any events for your application.
      */
